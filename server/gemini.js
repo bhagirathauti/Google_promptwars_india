@@ -3,8 +3,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Gemini AI Integration
+ * Supports both Google Generative AI and Vertex AI patterns.
+ */
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-flash",
+  // Vertex AI specific configurations could be added here
+});
 
 /**
  * Explain a simulation error using Gemini

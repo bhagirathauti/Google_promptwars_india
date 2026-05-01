@@ -10,13 +10,20 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@google-cloud/logging-winston": "^6.0.1",
     "@google/generative-ai": "^0.11.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.4.1",
-    "firebase-admin": "^12.1.0",
-    "helmet": "^8.1.0"
+    "firebase-admin": "^13.8.0",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "node-cache": "^5.1.2",
+    "winston": "^3.19.0",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",
