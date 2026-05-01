@@ -1,0 +1,71 @@
+{
+  "country": "India",
+  "version": "1.0.0",
+  "initialStep": "eligibility_check",
+  "steps": {
+    "eligibility_check": {
+      "id": "eligibility_check",
+      "title": "Eligibility Check",
+      "description": "Enter your basic details to see if you are eligible to participate in the democratic process.",
+      "fields": ["age", "citizenship"],
+      "validation": [
+        { "field": "age", "rule": "min", "value": 18, "message": "Minimum age for voting in India is 18 years." },
+        { "field": "citizenship", "rule": "equals", "value": "Indian", "message": "Only Indian citizens are eligible to vote." }
+      ],
+      "next": { "type": "linear", "target": "voter_registration" }
+    },
+    "voter_registration": {
+      "id": "voter_registration",
+      "title": "Registration Status",
+      "description": "Check if your name is already in the electoral roll.",
+      "fields": ["isRegistered"],
+      "validation": [],
+      "next": {
+        "type": "branch",
+        "conditionField": "isRegistered",
+        "branches": {
+          "true": "polling_booth_lookup",
+          "false": "identity_verification"
+        }
+      }
+    },
+    "polling_booth_lookup": {
+      "id": "polling_booth_lookup",
+      "title": "Find Your Booth",
+      "description": "Locate your assigned polling station based on your constituency.",
+      "fields": ["constituency"],
+      "validation": [
+        { "field": "constituency", "rule": "required", "message": "Constituency is required to find your booth." }
+      ],
+      "next": { "type": "linear", "target": "identity_verification" }
+    },
+    "identity_verification": {
+      "id": "identity_verification",
+      "title": "Identity Verification",
+      "description": "Provide your EPIC (Voter ID) number for verification at the booth.",
+      "fields": ["voterId"],
+      "validation": [
+        { "field": "voterId", "rule": "regex", "value": "^[A-Z]{3}[0-9]{7}$", "message": "Invalid Voter ID format (Expected: ABC1234567)" }
+      ],
+      "next": { "type": "linear", "target": "vote_casting" }
+    },
+    "vote_casting": {
+      "id": "vote_casting",
+      "title": "Cast Your Vote",
+      "description": "Select your candidate on the Electronic Voting Machine.",
+      "fields": ["candidateId"],
+      "validation": [
+        { "field": "candidateId", "rule": "required", "message": "Please select a candidate to proceed." }
+      ],
+      "next": { "type": "linear", "target": "confirmation" }
+    },
+    "confirmation": {
+      "id": "confirmation",
+      "title": "Confirmation",
+      "description": "Your vote has been recorded securely. Verify your VVPAT slip.",
+      "fields": [],
+      "validation": [],
+      "next": { "type": "end" }
+    }
+  }
+}
