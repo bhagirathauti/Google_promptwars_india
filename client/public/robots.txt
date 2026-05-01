@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://votesmart-sim-1092621834519.us-central1.run.app/sitemap.xml

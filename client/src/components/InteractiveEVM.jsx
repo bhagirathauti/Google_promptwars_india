@@ -96,9 +96,10 @@ const InteractiveEVM = ({ candidates = [], onVote }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
+              role="alert"
               className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-red-600 text-xs font-bold"
             >
-              <AlertCircle size={16} />
+              <AlertCircle size={16} aria-hidden="true" />
               {error}
             </motion.div>
           )}
@@ -107,10 +108,12 @@ const InteractiveEVM = ({ candidates = [], onVote }) => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
+              role="status"
+              aria-live="polite"
               className="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-2 text-emerald-600 text-xs font-black uppercase tracking-widest"
             >
-              <CheckCircle2 size={16} />
-              Vote Recorded
+              <CheckCircle2 size={16} aria-hidden="true" />
+              Vote Recorded Successfully
             </motion.div>
           )}
         </AnimatePresence>

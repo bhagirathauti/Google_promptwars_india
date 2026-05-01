@@ -26,8 +26,9 @@ const Registration = () => {
       <div className="space-y-6">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Voter ID Number (EPIC)</label>
+            <label htmlFor="voter-id" className="block text-sm font-medium text-slate-700 mb-2">Voter ID Number (EPIC)</label>
             <input 
+              id="voter-id"
               type="text" 
               placeholder="ABC1234567"
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
@@ -37,8 +38,9 @@ const Registration = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+            <label htmlFor="full-name" className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
             <input 
+              id="full-name"
               type="text" 
               placeholder="Enter your name"
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"

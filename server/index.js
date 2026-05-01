@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,7 +12,6 @@ import { db } from './firebase.js';
 import { getEducationalInsight, explainError, askElectionAssistant } from './gemini.js';
 import { SIMULATION_STEPS, CANDIDATES, POLLING_BOOTHS } from '../shared/constants.js';
 import SimulationEngine from './simulationEngine.js';
-import rateLimit from 'express-rate-limit';
 dotenv.config();
 
 const app = express();
@@ -18,7 +19,43 @@ const PORT = process.env.PORT || 5000;
 
 const engine = new SimulationEngine(path.join(__dirname, '../shared/simulationEngineConfig.json'));
 
-app.use(cors());
+// Security Middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'", "'unsafe-inline'", "https://maps.googleapis.com"],
+      "img-src": ["'self'", "data:", "https://maps.gstatic.com", "https://*.googleapis.com"],
+      "connect-src": ["'self'", "https://*.googleapis.com"]
+    }
+  },
+}));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again after 15 minutes"
+});
+
+app.use('/api/', limiter);
+
+// Restrict CORS in production
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5000',
+  'https://votesmart-sim-1092621834519.us-central1.run.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.json());
 
 const aiRateLimiter = rateLimit({
@@ -97,6 +134,12 @@ app.get('/api/insight/:stepId', aiRateLimiter, async (req, res) => {
 
 app.post('/api/progress', async (req, res) => {
   const { sessionId, stepIndex, data } = req.body;
+  
+  // Sanitize sessionId to prevent path traversal (alphanumeric only)
+  if (!sessionId || !/^[a-zA-Z0-9-]+$/.test(sessionId)) {
+    return res.status(400).json({ error: "Invalid Session ID" });
+  }
+
   if (!db) return res.status(200).json({ message: "Mock success" });
 
   const allowedData = {};
@@ -121,8 +164,11 @@ app.post('/api/progress', async (req, res) => {
 
 // Polling Booth Lookup
 app.get('/api/booth-lookup', (req, res) => {
-  const { pincode } = req.query;
+  let { pincode } = req.query;
   if (!pincode) return res.status(400).json({ error: "Pincode is required" });
+
+  // Ensure pincode is a string and alphanumeric
+  pincode = String(pincode).replace(/[^a-zA-Z0-9]/g, '');
 
   const booth = POLLING_BOOTHS.find(b => b.pincodes.includes(pincode));
   if (booth) {

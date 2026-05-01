@@ -44,18 +44,20 @@ const BoothLookup = () => {
     <div className="space-y-6">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} aria-hidden="true" />
           <input
             type="text"
             value={pincode}
             onChange={(e) => setPincode(e.target.value)}
             placeholder="Enter Pincode (e.g. 110027)"
+            aria-label="Enter your pincode to find your polling booth"
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
           />
         </div>
         <button 
           onClick={handleSearch}
           disabled={isLoading}
+          aria-label="Search for polling booth"
           className="bg-primary-600 text-white px-6 rounded-xl font-bold hover:bg-primary-700 disabled:opacity-50 transition-colors"
         >
           {isLoading ? '...' : 'Find'}

@@ -45,9 +45,10 @@ const Landing = ({ onStart }) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onStart}
+        aria-label="Start the election simulation"
         className="btn-primary text-xl"
       >
-        Start Simulation <ArrowRight size={24} />
+        Start Simulation <ArrowRight size={24} aria-hidden="true" />
       </motion.button>
 
       <div className="grid md:grid-cols-3 gap-8 mt-24 text-left">
@@ -67,6 +68,21 @@ const Landing = ({ onStart }) => {
           description="A digital twin of the Electronic Voting Machine used in Indian polls."
         />
       </div>
+
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true }}
+        className="mt-32 w-full max-w-5xl text-left"
+      >
+        <h2 className="text-3xl font-bold mb-12 text-center">General Election <span className="text-primary-600">Timeline</span></h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <TimelineItem date="Phase 1" title="Notification" desc="The President issues a notification on the advice of the EC." />
+          <TimelineItem date="Phase 2" title="Nominations" desc="Candidates file papers. Scrutiny and withdrawals follow." />
+          <TimelineItem date="Phase 3" title="Campaigning" desc="Parties reach out to voters. Silent period begins 48h before poll." />
+          <TimelineItem date="Phase 4" title="Polling & Results" desc="Citizens cast votes, followed by counting and result declaration." />
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
@@ -76,6 +92,14 @@ const FeatureCard = ({ icon, title, description }) => (
     <div className="mb-4">{icon}</div>
     <h3 className="text-xl font-bold mb-2">{title}</h3>
     <p className="text-slate-500">{description}</p>
+  </div>
+);
+
+const TimelineItem = ({ date, title, desc }) => (
+  <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+    <div className="text-primary-600 font-bold text-xs uppercase tracking-widest mb-2">{date}</div>
+    <h4 className="font-bold text-lg mb-2">{title}</h4>
+    <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
   </div>
 );
 

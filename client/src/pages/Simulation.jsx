@@ -136,16 +136,18 @@ const Simulation = () => {
               <button
                 onClick={prevStep}
                 disabled={currentStep === 0}
+                aria-label="Go back to previous step"
                 className={`btn-secondary w-full sm:w-auto ${currentStep === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
               >
-                <ChevronLeft size={20} /> Back
+                <ChevronLeft size={20} aria-hidden="true" /> Back
               </button>
               
               <button
                 onClick={handleNextWithCheck}
+                aria-label={currentStep === SIMULATION_STEPS.length - 1 ? 'Finish simulation' : 'Continue to next step'}
                 className={`btn-primary w-full sm:w-auto ${isNextDisabled() ? 'from-slate-400 to-slate-400 shadow-none cursor-not-allowed opacity-70' : ''}`}
               >
-                {currentStep === SIMULATION_STEPS.length - 1 ? 'Finish' : 'Continue'} <ChevronRight size={20} />
+                {currentStep === SIMULATION_STEPS.length - 1 ? 'Finish' : 'Continue'} <ChevronRight size={20} aria-hidden="true" />
               </button>
             </div>
           </div>
