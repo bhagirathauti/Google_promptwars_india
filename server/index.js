@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import { db } from './firebase.js';
 import { getEducationalInsight, explainError, askElectionAssistant } from './gemini.js';
 import { SIMULATION_STEPS, CANDIDATES, POLLING_BOOTHS } from '../shared/constants.js';
@@ -12,7 +16,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const engine = new SimulationEngine(path.resolve('../shared/simulationEngineConfig.json'));
+const engine = new SimulationEngine(path.join(__dirname, '../shared/simulationEngineConfig.json'));
 
 app.use(cors());
 app.use(express.json());
@@ -128,10 +132,14 @@ app.get('/api/booth-lookup', (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('VoteSmart Simulation API is running with Gemini AI integration...');
+// Serve frontend static files in production
+const frontendPath = path.join(__dirname, '../client/dist');
+app.use(express.static(frontendPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });

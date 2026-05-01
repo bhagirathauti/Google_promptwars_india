@@ -27,7 +27,7 @@ const BoothLookup = () => {
     setError('');
     
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/booth-lookup?pincode=${pincode}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || '/api'}/booth-lookup?pincode=${pincode}`);
       setBooth(res.data);
       updateUserData({ boothId: res.data.id });
     } catch (err) {

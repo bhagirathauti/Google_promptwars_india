@@ -1,0 +1,11 @@
+node_modules
+**/node_modules
+.git
+.env
+*.log
+client/dist
+server/dist
+.DS_Store
+.gcloudignore
+.dockerignore
+build.log

@@ -27,7 +27,7 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/ask-ai`, { question: input });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || '/api'}/ask-ai`, { question: input });
       const assistantMessage = { role: 'assistant', content: res.data.answer };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {

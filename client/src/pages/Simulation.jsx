@@ -9,6 +9,8 @@ import InteractiveEVM from '../components/InteractiveEVM';
 import Chatbot from '../components/Chatbot';
 import { ChevronRight, ChevronLeft, Info, RefreshCcw, AlertCircle, Bot } from 'lucide-react';
 
+import VVPATPrinter from '../components/VVPATPrinter';
+
 const Simulation = () => {
   const { 
     currentStep, nextStep, prevStep, fetchInsight, insight, 
@@ -16,6 +18,14 @@ const Simulation = () => {
   } = useStore();
 
   const [showErrorHelp, setShowErrorHelp] = useState(false);
+  const [printing, setPrinting] = useState(false);
+  const [lastSelected, setLastSelected] = useState(null);
+
+  const handleVoteCast = (candidate) => {
+    setLastSelected(candidate);
+    setPrinting(true);
+    setTimeout(() => setPrinting(false), 5000);
+  };
 
   useEffect(() => {
     const currentStepId = SIMULATION_STEPS[currentStep]?.id;
@@ -30,7 +40,7 @@ const Simulation = () => {
       case 0: return <Registration />;
       case 1: return <InkMarking />;
       case 2: return <PollingBooth />;
-      case 3: return <InteractiveEVM candidates={config?.candidates} />;
+      case 3: return <InteractiveEVM candidates={config?.candidates} onVote={handleVoteCast} />;
       default: return null;
     }
   };
@@ -45,7 +55,7 @@ const Simulation = () => {
     if (isNextDisabled()) {
       const stepTitle = SIMULATION_STEPS[currentStep].title;
       const errorText = currentStep === 0 
-        ? "Voter ID and Polling Booth must be selected before proceeding." 
+        ? "Please enter your Voter ID and click 'Find' to select your Polling Booth before continuing." 
         : "You must select a candidate on the EVM to cast your vote.";
       explainError(stepTitle, errorText);
       setShowErrorHelp(true);
@@ -79,10 +89,10 @@ const Simulation = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
+    <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
       <Chatbot />
       
-      <div className="relative mb-12 px-4">
+      <div className="relative mb-12 px-4 max-w-4xl mx-auto">
         <div className="stepper-line" />
         <div 
           className="stepper-line-active" 
@@ -97,7 +107,7 @@ const Simulation = () => {
               }`}>
                 {idx + 1}
               </div>
-              <span className={`hidden md:block text-xs mt-2 font-medium ${idx <= currentStep ? 'text-primary-600' : 'text-slate-400'}`}>
+              <span className={`hidden sm:block text-[10px] md:text-xs mt-2 font-medium text-center max-w-[80px] ${idx <= currentStep ? 'text-primary-600' : 'text-slate-400'}`}>
                 {step.title}
               </span>
             </div>
@@ -105,9 +115,9 @@ const Simulation = () => {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2">
-          <div className="material-card p-8 md:p-12 min-h-[500px] flex flex-col">
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
+        <div className="w-full">
+          <div className="material-card p-4 sm:p-6 md:p-8 min-h-[450px] md:min-h-[600px] flex flex-col shadow-2xl shadow-slate-200/50">
             <div className="flex-1">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -122,18 +132,18 @@ const Simulation = () => {
               </AnimatePresence>
             </div>
 
-            <div className="mt-12 flex justify-between items-center border-t border-slate-100 pt-8">
+            <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-slate-100 pt-8">
               <button
                 onClick={prevStep}
                 disabled={currentStep === 0}
-                className={`btn-secondary ${currentStep === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                className={`btn-secondary w-full sm:w-auto ${currentStep === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
               >
                 <ChevronLeft size={20} /> Back
               </button>
               
               <button
                 onClick={handleNextWithCheck}
-                className={`btn-primary ${isNextDisabled() ? 'bg-slate-400 cursor-not-allowed' : ''}`}
+                className={`btn-primary w-full sm:w-auto ${isNextDisabled() ? 'from-slate-400 to-slate-400 shadow-none cursor-not-allowed opacity-70' : ''}`}
               >
                 {currentStep === SIMULATION_STEPS.length - 1 ? 'Finish' : 'Continue'} <ChevronRight size={20} />
               </button>
@@ -141,7 +151,23 @@ const Simulation = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="w-full space-y-6 md:space-y-8 sticky top-8">
+          <AnimatePresence mode="wait">
+            {currentStep === 3 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <VVPATPrinter 
+                  printing={printing} 
+                  isVoted={!!userData.selectedCandidate} 
+                  lastSelected={lastSelected} 
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <AnimatePresence mode="wait">
             {showErrorHelp && aiExplanation ? (
               <motion.div 
@@ -149,7 +175,7 @@ const Simulation = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="material-card bg-amber-50 border-amber-200 p-8 sticky top-8 shadow-amber-100 shadow-xl"
+                className="material-card bg-amber-50 border-amber-200 p-8 shadow-amber-100 shadow-xl"
               >
                 <div className="flex items-center gap-3 mb-6 text-amber-600">
                   <AlertCircle size={24} />
@@ -171,7 +197,7 @@ const Simulation = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="material-card bg-primary-900 text-white p-8 sticky top-8"
+                className="material-card bg-primary-900 text-white p-8"
               >
                 <div className="flex items-center gap-3 mb-6 text-primary-300">
                   <Info size={24} />

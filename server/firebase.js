@@ -17,5 +17,5 @@ if (serviceAccount) {
   console.warn("Firebase Service Account not found. Running in mock mode.");
 }
 
-export const db = admin.firestore?.() || null;
+export const db = serviceAccount ? admin.firestore() : null;
 export default admin;
